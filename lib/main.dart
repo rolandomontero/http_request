@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'class/puntos.dart';
@@ -12,7 +13,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,21 +36,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController phoneNumberController = TextEditingController();
-  TextEditingController puntosNumberController = TextEditingController();
+  final TextEditingController phoneNumberController = 
+      MaskedTextController(mask: '+56900000000', text: '+56');
+  final TextEditingController puntosNumberController = TextEditingController();
 
   String cliente = '';
   String msgbusqueda = 'Número no encontrado';
-
   Map<String, dynamic> userData = {};
   static String idCliente = '56977838836';
-  bool isLoading = false; // Nuevo indicador de carga
-  bool addPuntos = false; // Obtiene Puntos
+  bool isLoading = false;
+  bool addPuntos = false;
 
   static const uLocal = 'https://wampus.mclautaro.cl/API';
 
-  // Borrar esto después.
-
+  // Función para obtener puntos del cliente
   static Future<List<Puntos>> getPuntos(String idCliente) async {
     final url = Uri.parse('$uLocal/puntos?id_cliente=$idCliente');
     final response = await http.get(url);
@@ -58,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return data.map<Puntos>(Puntos.fromJson).toList();
   }
 
-  // GET datos del usuario
+  // Función para obtener datos del cliente
   Future<void> getData() async {
     setState(() {
       msgbusqueda = 'Número no encontrado';
@@ -98,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // PUT datos
+  // Función para enviar datos del cliente
   Future<void> postData() async {
     setState(() {
       isLoading = true;
@@ -110,16 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
       String formattedDate = DateFormat('yyyy-MM-dd').format(now);
       String formattedTime = DateFormat('HH:mm:ss').format(now);
 
-      // Construir URL con fecha y hora actual
       final url = Uri.parse(
-          '$uLocal/puntos?id_cliente=${phoneNumberController.text}&fecha=$formattedDate&hora=$formattedTime&puntos=${puntosNumberController.text}&observacion=Registro_Wampus');
-      // _showMessage(url.toString());
-
-      // ?id_cliente=56977838836&fecha=2024-04-06&hora=14:15:00&puntos=20&observacion=👉 Registro manual
-      // final url = Uri.parse(
-      //     '$uLocal/puntos?id_cliente=${phoneNumberController.text}&fecha=2024-07-21&hora=08:15:00&puntos=${puntosNumberController.text}&observacion=👉Registro_Wampus'); // URL base sin parámetros de consulta
-      // _showMessage(url.toString());
-
+          '$uLocal/puntos?id_cliente=${phoneNumberController.text}&fecha=$formattedDate&hora=$formattedTime&puntos=${puntosNumberController.text}&observacion=Registro_Wampus');  
       final response = await http.post(url);
 
       if (response.statusCode == 201) {
@@ -164,254 +155,228 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         flexibleSpace: SafeArea(
-            child: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 147,
-              height: 60,
-              fit: BoxFit.cover,
-            ),
-            const Text(
-              'Update Wampus',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  backgroundColor: Colors.black,
-                  color: Colors.white,
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.bold),
-            )
-          ],
-        )),
+          child: Row(
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 147,
+                height: 60,
+                fit: BoxFit.cover,
+              ),
+              const Text(
+                'Update Wampus',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    backgroundColor: Colors.black,
+                    color: Colors.white,
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ),
       ),
       body: Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              TextField(
-                keyboardType: TextInputType.phone,
-                controller: phoneNumberController,
-                decoration: InputDecoration(
-                  fillColor: Colors.amber,
-                  focusColor: Colors.amber,
-                  labelText: 'Número telefónico',
-                  enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(14.0)),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(style: BorderStyle.solid),
-                      borderRadius: BorderRadius.circular(14.0)),
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 20),
+            TextField(
+              keyboardType: TextInputType.phone,
+              controller: phoneNumberController,
+              decoration: InputDecoration(
+                fillColor: Colors.amber,
+                focusColor: Colors.amber,
+                labelText: 'Número telefónico',
+                enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(style: BorderStyle.solid),
+                    borderRadius: BorderRadius.circular(14.0)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(style: BorderStyle.solid),
+                    borderRadius: BorderRadius.circular(14.0)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    getData();
+                    addPuntos = true;
+                  },
+                  child: const Text('Agregar Puntos'),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      getData();
-                      addPuntos = true;
-                    },
-                    child: const Text('Agregar Puntos'),
+                const SizedBox(width: 18.2),
+                ElevatedButton(
+                  onPressed: () {
+                    getData();
+                    addPuntos = false;
+                  },
+                  child: const Text('Obtener Puntos'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (isLoading)
+              const Center(
+                  child: CircularProgressIndicator())
+            else if (userData.isNotEmpty && addPuntos)
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 177, 180, 245).withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(14.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16.0),
+                      Text('Nombre: ${userData['nombre']}'),
+                      Text('Correo: ${userData['correo']}'),
+                      Text('Dirección: ${userData['direccion']}'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 32.0),
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          controller: puntosNumberController,
+                          decoration: InputDecoration(
+                            prefixIconColor: Colors.blue,
+                            fillColor: Colors.white,
+                            focusColor: Colors.white,
+                            filled: true,
+                            labelText: 'Número de puntos',
+                            enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(14.0)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(14.0)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            postData();
+                          },
+                          child: const Text('Guardar Puntos'),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(
-                    width: 18.2,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      getData();
-                      addPuntos = false;
-                    },
-                    child: const Text('Obtener Puntos'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              if (isLoading)
-                const Center(
-                    child: CircularProgressIndicator()) // Indicador de carga
-              else if (userData.isNotEmpty && addPuntos)
-                Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 177, 180, 245)
-                          .withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(14.0),
-                      // Opacidad del 20%
-                    ),
-                    child: Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(
-                              height: 16.0,
-                            ),
-                            Text('Nombre: ${userData['nombre']}'),
-                            Text('Correo: ${userData['correo']}'),
-                            // Text('Móvil: ${userData['movil']}'),
-                            Text('Dirección: ${userData['direccion']}'),
-                            // Text('Fecha de nacimiento: ${userData['nacimiento']}'),
-                            // Text('Observaciones: ${userData['observaciones']}'),
-                            // Text('Token: ${userData['token']}'),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12.0, vertical: 32.0),
-                              child: TextField(
-                                keyboardType: TextInputType.phone,
-                                controller: puntosNumberController,
-                                decoration: InputDecoration(
-                                  prefixIconColor: Colors.blue,
-                                  fillColor: Colors.white,
-                                  focusColor: Colors.white,
-                                  filled: true,
-                                  labelText: 'Número de puntos',
-                                  enabledBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          style: BorderStyle.solid),
-                                      borderRadius:
-                                          BorderRadius.circular(14.0)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(
-                                          style: BorderStyle.solid),
-                                      borderRadius:
-                                          BorderRadius.circular(14.0)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 16.0,
-                            ),
-
-                            Center(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  postData();
-                                },
-                                child: const Text('Guardar Puntos'),
-                              ),
-                            ),
-                          ],
-                        )))
-              else if (userData.isNotEmpty && (!addPuntos))
-                Expanded(
-                  child: FutureBuilder<List<Puntos>>(
-                      future: getPuntos(idCliente),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasData) {
-                          final puntos = snapshot.data!;
-                          return buildPuntos(puntos);
-                        } else {
-                          return const Text('No hay datos');
-                        }
-                      }),
-                )
-              else if (phoneNumberController.text == '')
-                const Text('')
-              else
-                Text(msgbusqueda),
-            ],
-          )),
+                ),
+              )
+            else if (userData.isNotEmpty && (!addPuntos))
+              Expanded(
+                child: FutureBuilder<List<Puntos>>(
+                    future: getPuntos(idCliente),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasData) {
+                        final puntos = snapshot.data!;
+                        return buildPuntos(puntos);
+                      } else {
+                        return const Text('No hay datos');
+                      }
+                    }),
+              )
+            else if (phoneNumberController.text == '')
+              const Text('')
+            else
+              Text(msgbusqueda),
+          ],
+        ),
+      ),
     );
   }
 
-  // ignore: non_constant_identifier_names
-  void _showMessage(String Titulo, String message) {
+  // Muestra un mensaje en un diálogo
+  void _showMessage(String titulo, String message) {
     showDialog<void>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(Titulo),
-            content: SingleChildScrollView(
-              child: SelectableText(message),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Cerrar'),
-              )
-            ],
-          );
-        });
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(titulo),
+          content: SingleChildScrollView(
+            child: SelectableText(message),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cerrar'),
+            )
+          ],
+        );
+      },
+    );
   }
 
+  // Construye la lista de puntos
   Widget buildPuntos(List<Puntos> puntos) => ListView.builder(
-      itemCount: puntos.length,
-      itemBuilder: (context, index) {
-        final punto = puntos[index];
-        return Column(children: [
+    itemCount: puntos.length,
+    itemBuilder: (context, index) {
+      final punto = puntos[index];
+      return Column(
+        children: [
           Card(
-              elevation: 8.0,
-              child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Column(
+            elevation: 8.0,
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const SizedBox(
-                        height: 2,
+                      const SizedBox(width: 8),
+                      Center(
+                        child: Text(
+                          punto.puntos.toString(),
+                          style: const TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      const SizedBox(width: 12),
+                      Column(
                         children: [
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Center(
-                            child: Text(
-                              punto.puntos.toString(),
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                punto.obs,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                punto.fecha,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                ),
-                              ),
-                              Text(
-                                punto.hora,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            width: 8,
+                          Text(
+                            punto.obs,
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 8,
-                      )
+                      Column(
+                        children: [
+                          Text(
+                            punto.fecha,
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                          Text(
+                            punto.hora,
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 8),
                     ],
-                  ))),
-          const SizedBox(
-            height: 10,
-          )
-        ]);
-      });
+                  ),
+                  const SizedBox(height: 8)
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10)
+        ],
+      );
+    },
+  );
 }

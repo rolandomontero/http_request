@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:clubwampus/global/const.dart';
-import 'package:clubwampus/model/cliente.dart';
-import 'package:clubwampus/model/premio.dart';
-import 'package:clubwampus/model/puntos.dart';
+import 'package:http_request/global/const.dart';
+import 'package:http_request/model/cliente.dart';
+import 'package:http_request/model/premio.dart';
+import 'package:http_request/model/puntos.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';

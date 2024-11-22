@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:clubwampus/services/authentication.dart';
+import 'package:http_request/services/authentication.dart';
 
 void main() {
   // Pruebas al API request

@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // Función para obtener puntos del cliente
   static Future<List<Puntos>> getPuntos(String idCliente) async {
     final url = Uri.parse('$uLocal/puntos?id_cliente=$idCliente');
-    final response = await http.get(url);
+    print(url);     final response = await http.get(url);
     final data = jsonDecode(response.body);
     return data.map<Puntos>(Puntos.fromJson).toList();
   }
@@ -278,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     future: getPuntos(idCliente),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return const Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasData) {
                         final puntos = snapshot.data!;
                         return buildPuntos(puntos);

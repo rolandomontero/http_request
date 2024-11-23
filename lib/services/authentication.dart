@@ -176,7 +176,7 @@ class AuthMethod {
     final url = Uri.parse('$uLocal/puntos?id_cliente=$idCliente');
     final response = await http.get(url);
     final data = jsonDecode(response.body);
-    return data.map<Puntos>(Puntos.fromJson).toList();
+    return data.map<Puntos>((json) => Puntos.fromJson(json)).toList();
   }
 
   Future<bool> enviarPuntos(String idCliente, int puntos) async {

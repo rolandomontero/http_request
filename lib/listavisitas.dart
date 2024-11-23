@@ -1,20 +1,20 @@
-import 'package:clubwampus/global/const.dart';
-import 'package:clubwampus/model/premio.dart';
-import 'package:clubwampus/services/authentication.dart';
+import 'package:http_request/global/const.dart';
+import 'package:http_request/model/puntos.dart';
+import 'package:http_request/services/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ListPremios extends StatefulWidget {
-  final Function(String) cobraPremio;
+class ListVisitas extends StatefulWidget {
+  final String idCliente;
 
-  const ListPremios({super.key, required this.cobraPremio});
+  const ListVisitas({super.key, required this.idCliente});
 
   @override
-  State<ListPremios> createState() => _ListPremiosState();
+  State<ListVisitas> createState() => _ListVisitasState();
 }
 
-class _ListPremiosState extends State<ListPremios> {
-  List<Premio> _premios = [];
+class _ListVisitasState extends State<ListVisitas> {
+  List<Puntos> _puntos = [];
   bool _isLoading = true;
 
   @override
@@ -24,7 +24,7 @@ class _ListPremiosState extends State<ListPremios> {
   }
 
   Future<void> _loadData() async {
-    _premios = await AuthMethod.getPremios();
+    _puntos = await AuthMethod.getPuntos(widget.idCliente);
     setState(() {
       _isLoading = false;
     });
@@ -33,6 +33,42 @@ class _ListPremiosState extends State<ListPremios> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+            appBar: AppBar(
+        toolbarHeight: 80,
+        backgroundColor: Colors.black,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.notifications,
+              color: Color(0xFFfb5104),
+            ),
+            onPressed: () {},
+          ),
+        ],
+        flexibleSpace: SafeArea(
+          child: Row(
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 147,
+                height: 60,
+                fit: BoxFit.cover,
+              ),
+              const Text(
+                'Update Wampus',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    backgroundColor: Colors.black,
+                    color: Colors.white,
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold),
+              )
+            ],
+          ),
+        ),
+      ),
+     
       body: Container(
           height: double.infinity,
           decoration: const BoxDecoration(
@@ -53,7 +89,7 @@ class _ListPremiosState extends State<ListPremios> {
               ),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : _premios.isEmpty
+                  : _puntos.isEmpty
                       ? Center(
                           child: Text(
                             'No hay premios disponibles',
@@ -66,16 +102,16 @@ class _ListPremiosState extends State<ListPremios> {
                       : Expanded(
                           child: ListView.builder(
                             padding: const EdgeInsets.all(8.0),
-                            itemCount: _premios.length,
+                            itemCount: _puntos.length,
                             itemBuilder: (context, index) {
-                              final premio = _premios[index];
+                              final puntos = _puntos[index];
                               return Card(
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 3.0),
                                 elevation: 2.0,
                                 child: ListTile(
                                   leading: const SizedBox(
-                                    child: Text('🛎️',
+                                    child: Text('👉',
                                         style: TextStyle(
                                             fontSize: 32.0,
                                             fontWeight: FontWeight.bold)),
@@ -83,7 +119,7 @@ class _ListPremiosState extends State<ListPremios> {
                                   title: Row(
                                     children: [
                                       Text(
-                                        premio.categoria,
+                                        puntos.fecha,
                                         style: GoogleFonts.acme(
                                           fontSize: 20.0,
                                           fontWeight: FontWeight.bold,
@@ -91,7 +127,7 @@ class _ListPremiosState extends State<ListPremios> {
                                       ),
                                       const Spacer(),
                                       Text(
-                                        '${premio.puntos} p',
+                                        '${puntos.puntos} p',
                                         style: GoogleFonts.acme(
                                             color: txt_wampus,
                                             fontSize: 22.0,
@@ -101,14 +137,9 @@ class _ListPremiosState extends State<ListPremios> {
                                   ),
 
                                   subtitle: Text(
-                                    premio.promo,
+                                    puntos.observacion,
                                     style: GoogleFonts.acme(fontSize: 16.0),
                                   ),
-                                  trailing: const Icon(Icons.arrow_forward),
-                                  onTap: () {
-                                    widget.cobraPremio(
-                                        'Cobrar premio ${premio.promo}ptos');
-                                  },
                                 ),
                               );
                             },

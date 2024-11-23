@@ -6,7 +6,7 @@ class Puntos {
   final int puntos;
   final String observacion;
 
-  const Puntos({
+   Puntos({
     required this.id,
     required this.fecha,
     required this.hora,
@@ -14,7 +14,9 @@ class Puntos {
     required this.observacion,
   });
 // "[{"id_visita":1105,"fecha":"22 Nov 2024","hora":"05:57 PM","puntos":10,"observacion":"Compra"},{"id_visita":1041,"fecha":"06 Nov…"
-  static Puntos fromJson(json) =>
+
+
+factory   Puntos.fromJson(Map<String, dynamic> json) =>
       Puntos(
         id: json["id_visita"], 
         fecha: json['fecha'], 

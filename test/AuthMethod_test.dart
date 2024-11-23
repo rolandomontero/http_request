@@ -16,9 +16,17 @@ void main() {
   });
 
   test('Lista de Premios', () async {
-      final premios = await AuthMethod.getPuntos('56977838836');
+      final premios = await AuthMethod.getPremios();
      print(premios); // Imprime la lista de premios en la consola
   expect(premios.isNotEmpty, true); // Verifica que la lista no esté vacía
+
+  });
+
+
+  test('Lista de Puntos', () async {
+      final puntos = await AuthMethod.getPuntos('56977838836');
+     print(puntos); // Imprime la lista de premios en la consola
+  expect(puntos.isNotEmpty, true); // Verifica que la lista no esté vacía
 
   });
 

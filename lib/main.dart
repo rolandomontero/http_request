@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_request/listavisitas.dart';
 import 'package:intl/intl.dart';
 import 'class/puntos.dart';
 
@@ -213,7 +214,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 18.2),
                 ElevatedButton(
                   onPressed: () {
-                    getData();
+                      Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListVisitas(idCliente: idCliente),
+                    ),
+                  );
                     addPuntos = false;
                   },
                   child: const Text('Obtener Puntos'),
@@ -273,20 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               )
             else if (userData.isNotEmpty && (!addPuntos))
-              Expanded(
-                child: FutureBuilder<List<Puntos>>(
-                    future: getPuntos(idCliente),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasData) {
-                        final puntos = snapshot.data!;
-                        return buildPuntos(puntos);
-                      } else {
-                        return const Text('No hay datos');
-                      }
-                    }),
-              )
+               const Text('')
             else if (phoneNumberController.text == '')
               const Text('')
             else
